@@ -1,0 +1,66 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: homework
+  name: nginxconf
+data:
+  default.conf: |
+     server {
+       listen       8000;
+       server_name  localhost;
+       location / {
+         root /homework;
+        }
+      }
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "websrv"
+  namespace: homework
+  labels:
+    app: "homework"
+spec:
+  containers:
+  - name: websrv
+    image: "nginx:latest"
+    resources:
+      limits:
+        cpu: 50m
+        memory: 128Mi
+      requests:
+        cpu: 50m
+        memory: 128Mi
+    ports:
+    - containerPort:  8000
+      name:  http
+    volumeMounts:
+    - name: homework
+      mountPath: /homework
+    - name: nginxconf
+      mountPath: /etc/nginx/conf.d/
+    lifecycle:
+      preStop:
+        exec:
+          command: ["/bin/sh","-c","rm -f /homework/index.html"]          
+  initContainers:
+  - name: install
+    image: busybox:latest
+    command:
+    - wget
+    - "-O"
+    - "/init/index.html"
+    - http://info.cern.ch
+    volumeMounts:
+    - name: homework
+      mountPath: "/init"
+  volumes:
+    - name: homework
+      emptyDir:
+        sizeLimit: 1Mi
+    - name: nginxconf
+      configMap:
+        name: nginxconf
+  restartPolicy: Always
