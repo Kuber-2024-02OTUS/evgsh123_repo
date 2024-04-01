@@ -1,0 +1,95 @@
+namespace: homework
+
+replicaCount: 3
+
+image:
+  repository: nginx
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imageInit:
+  repository: curlimages/curl
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+argsInit: 
+  - |
+    curl http://info.cern.ch > /init/index.html
+    curl --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" https://kubernetes.default.svc.cluster.local/metrics > /init/metrics.html
+
+commandsInit:
+  - "sh"
+  - "-c"
+
+livenessProbe: 
+  httpGet:
+    path: /index.html
+    port: 8000
+  initialDelaySeconds: 3
+  periodSeconds: 3     
+
+readnessProbe: 
+  httpGet:
+    path: /index.html
+    port: 8000
+  initialDelaySeconds: 3
+  periodSeconds: 3     
+
+volumeMounts:
+  - name: homework
+    mountPath: /homework
+  - name: nginxconf
+    mountPath: /etc/nginx/conf.d/
+
+volumeMountsInit:
+  - name: homework
+    mountPath: /init
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: "monitoring"
+
+podAnnotations: {}
+
+podLabels: {}
+
+podSecurityContext: {}
+
+securityContext: 
+  runAsUser: 0
+
+service:
+  type: ClusterIP
+  port: 8000
+
+ingress:
+  enabled: true
+  className: "nginx"
+ 
+  hosts:
+    - host: homework.otus
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+resources: {}
+
+volumes: 
+  - name: homework
+    persistentVolumeClaim:
+      claimName: homework
+  - name: nginxconf
+    configMap:
+      name: nginxconf
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+redis:
+  architecture: standalone

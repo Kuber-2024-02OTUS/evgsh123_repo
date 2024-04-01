@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: "{{ .Values.namespace }}"
+  name: nginxconf
+data:
+  default.conf: |
+     server {
+       listen       8000;
+       server_name  localhost;
+       location  /metrics.html  {
+           root /homework;
+       }
+       location / {
+         root /homework;
+         rewrite ^ /index.html break; 
+        }
+      }

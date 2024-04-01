@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "homework-templating.fullname" . }}
+  namespace: "{{ .Values.namespace }}"
+  labels:
+    {{- include "homework-templating.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "homework-templating.selectorLabels" . | nindent 4 }}
