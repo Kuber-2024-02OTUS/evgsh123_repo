@@ -1,0 +1,21 @@
+releases:
+- name: kafka-prod
+  namespace: prod
+  chart: oci://registry-1.docker.io/bitnamicharts/kafka
+  version: 23.0.0
+  set:
+  - name: replicaCount
+    value: 5 
+- name: kafka-dev
+  namespace: dev
+  chart: oci://registry-1.docker.io/bitnamicharts/kafka
+  version: 28.0.0
+  set:
+  - name: replicaCount
+    value: 1
+  - name: listeners.interbroker.protocol
+    value: plaintext 
+  - name: listeners.client.protocol
+    value: plaintext 
+  - name: tls.sslClientAuth
+    value: none

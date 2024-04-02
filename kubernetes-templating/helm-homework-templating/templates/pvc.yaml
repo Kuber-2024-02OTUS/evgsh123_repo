@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: homework
+  namespace: "{{ .Values.namespace }}"
+  labels:
+    app: {{ include "homework-templating.fullname" . }}
+spec:
+  storageClassName: standard
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi

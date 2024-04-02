@@ -1,0 +1,10 @@
+apiVersion: v2
+name: homework-templating
+description: My Homework Chart :)
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+dependencies:
+  - name: redis
+    version: "19.0.1"
+    repository:  oci://registry-1.docker.io/bitnamicharts
