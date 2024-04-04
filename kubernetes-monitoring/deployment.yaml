@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  homework-monitoring
+  namespace: homework
+  labels:
+    app: homework-monitoring
+spec:
+  selector:
+    matchLabels:
+      app: homework-monitoring
+  replicas: 2
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: homework-monitoring
+    spec:
+      containers:
+      - name: websrv
+        image: "nginx-stub:latest"
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: 50m
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        ports:
+          - containerPort: 8000
+            name:  http
+        livenessProbe:
+          httpGet:
+            path: /basic_status
+            port: 8000
+          initialDelaySeconds: 3
+          periodSeconds: 3      
+      - name: nginx-exporter
+        image: "nginx/nginx-prometheus-exporter:1.1.0"
+        args: 
+        - "--nginx.scrape-uri=http://127.0.0.1:8000/basic_status"
+        resources:
+          limits:
+            cpu: 50m
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        ports:
+          - containerPort: 9113
+            name:  http-exporter 
+      restartPolicy: Always
+  
+      
+                  
+
+
+            
+
+        
