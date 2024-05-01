@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  mysql-operator
+  namespace: default
+  labels:
+    app:  mysql-operator
+spec:
+  selector:
+    matchLabels:
+      app: mysql-operator
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app:  mysql-operator
+    spec:
+      serviceAccountName: mysql-sa
+      containers:
+      - name:  mysql-operator
+        image:  evgsh555/bash-mysql-operator:latest
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+      restartPolicy: Always
