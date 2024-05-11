@@ -4,9 +4,6 @@ metadata:
   labels:
     kubernetes.io/metadata.name: homework
   name: homework
-  resourceVersion: "76588"
 spec:
   finalizers:
   - kubernetes
-status:
-  phase: Active
