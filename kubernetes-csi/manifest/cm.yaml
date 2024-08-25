@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: default
+  name: nginxconf
+data:
+  default.conf: |
+     server {
+       listen       8000;
+       server_name  localhost;
+       location  /conf  {
+           alias /conf;
+       }
+       location / {
+         root /homework;
+         rewrite ^ /index.html break; 
+        }
+      }
+
+  
